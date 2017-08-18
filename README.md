@@ -4,7 +4,7 @@ If you need a way to set your ASP NET CORE website/api service with custom local
 # NOTE
 You can use the version 1.0 for .net core (asp net core 1.x) or the version 2.0 for .net core 2.0 (asp net core 2)
 
-# How it install
+# How to install
 
 Simply go into NuGet package manager and search for DewLocalizationMiddleware or use:
 ```Console
