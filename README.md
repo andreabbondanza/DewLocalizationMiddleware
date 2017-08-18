@@ -124,3 +124,12 @@ public IActionResult About()
     return View();
 }
 ```
+## Note 
+## NuGet
+You can find it on nuget with the name [DewLocalizationMiddleware](https://www.nuget.org/packages/DewLocalizationMiddleware/)
+
+## About
+[Andrea Vincenzo Abbondanza](http://www.andrewdev.eu)
+
+## Donate
+[Help me to grow up, if you want](https://payPal.me/andreabbondanza)
