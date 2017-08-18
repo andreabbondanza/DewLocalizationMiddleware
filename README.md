@@ -73,7 +73,7 @@ __Cookie__
 
 This is just the language Cookie name. Call it how you want. Default value is "lang".
 
-__CustomName__ -  _WORKS ONLY IN V. 2.1.0__
+__CustomName__ -  _WORKS ONLY IN V. 2.1.0_
 
 If you need a custom name for HttpContext item you can set it here, just remember to pass to __GetDewLocalizationTranslator__ (HttpContext extension class method).
 
