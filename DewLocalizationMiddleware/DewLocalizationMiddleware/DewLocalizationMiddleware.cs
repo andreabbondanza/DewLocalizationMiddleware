@@ -124,7 +124,7 @@ namespace DewCore.AspNetCore.Middlewares
                 }
             }
             var dictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(localizationJson);
-            context.Items.Add("DewLocalization", dictionary);
+            context.Items.Add(_options.CustomName, dictionary);
             return _next(context);
         }
     }
@@ -145,6 +145,10 @@ namespace DewCore.AspNetCore.Middlewares
         /// Default cookie language name
         /// </summary>
         public string Cookie = "lang";
+        /// <summary>
+        /// Httpcontext item name
+        /// </summary>
+        public string CustomName = "DewLocalization";
     }
     /// <summary>
     /// HTTPContext DewLocalization Extension class
@@ -155,6 +159,7 @@ namespace DewCore.AspNetCore.Middlewares
         /// Returns the DewTranslator object
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="customName"></param>
         /// <returns></returns>
         public static DewTranslator GetDewLocalizationTranslator(this HttpContext context, string customName = null)
         {
