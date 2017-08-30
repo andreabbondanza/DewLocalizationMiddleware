@@ -80,23 +80,8 @@ namespace DewCore.AspNetCore.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly DewLocalizationMiddlewareOptions _options;
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="next">Next middleware</param>
-        /// <param name="options">Localization options</param>
-        public DewLocalizationMiddleware(RequestDelegate next, DewLocalizationMiddlewareOptions options)
-        {
-            _next = next;
-            _options = options;
-        }
-        /// <summary>
-        /// Invoke method
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="env"></param>
-        /// <returns></returns>
-        public async Task<Task> Invoke(HttpContext context, IHostingEnvironment env)
+        private Dictionary<string, string> _dictionary = null;
+        private async Task GetDictionaryFromFiles(HttpContext context, IHostingEnvironment env)
         {
             var language = context.Request.Cookies.FirstOrDefault(x => x.Key == _options.Cookie);
             string currLanguage = _options.Language;
@@ -123,8 +108,28 @@ namespace DewCore.AspNetCore.Middlewares
                     }
                 }
             }
-            var dictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(localizationJson);
-            context.Items.Add(_options.CustomName, dictionary);
+            _dictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(localizationJson);
+        }
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="next">Next middleware</param>
+        /// <param name="options">Localization options</param>
+        public DewLocalizationMiddleware(RequestDelegate next, DewLocalizationMiddlewareOptions options)
+        {
+            _next = next;
+            _options = options;
+        }
+        /// <summary>
+        /// Invoke method
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="env"></param>
+        /// <returns></returns>
+        public Task Invoke(HttpContext context, IHostingEnvironment env)
+        {
+            GetDictionaryFromFiles(context, env).Wait();
+            context.Items.Add(_options.CustomName, _dictionary);
             return _next(context);
         }
     }
