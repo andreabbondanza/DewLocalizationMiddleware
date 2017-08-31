@@ -126,11 +126,11 @@ namespace DewCore.AspNetCore.Middlewares
         /// <param name="context"></param>
         /// <param name="env"></param>
         /// <returns></returns>
-        public Task Invoke(HttpContext context, IHostingEnvironment env)
+        public async Task Invoke(HttpContext context, IHostingEnvironment env)
         {
             GetDictionaryFromFiles(context, env).Wait();
             context.Items.Add(_options.CustomName, _dictionary);
-            return _next(context);
+            await _next(context);
         }
     }
     /// <summary>
