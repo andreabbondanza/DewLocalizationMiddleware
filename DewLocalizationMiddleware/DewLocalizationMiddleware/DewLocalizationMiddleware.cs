@@ -90,7 +90,7 @@ namespace DewCore.AspNetCore.Middlewares
             string localizationJson = null;
             try
             {
-                using (Stream file = env.ContentRootFileProvider.GetFileInfo(_options.Path + "/" + language + ".json").CreateReadStream())
+                using (Stream file = env.ContentRootFileProvider.GetFileInfo(_options.Path + "/" + currLanguage + ".json").CreateReadStream())
                 {
                     using (StreamReader streamReader = new StreamReader(file))
                     {
