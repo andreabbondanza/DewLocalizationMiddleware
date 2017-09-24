@@ -90,7 +90,7 @@ namespace DewCore.AspNetCore.Middlewares
             string localizationJson = null;
             try
             {
-                using (Stream file = env.ContentRootFileProvider.GetFileInfo(_options.Path + "/" + language + ".json").CreateReadStream())
+                using (Stream file = env.ContentRootFileProvider.GetFileInfo(_options.Path + "/" + currLanguage + ".json").CreateReadStream())
                 {
                     using (StreamReader streamReader = new StreamReader(file))
                     {
@@ -126,11 +126,11 @@ namespace DewCore.AspNetCore.Middlewares
         /// <param name="context"></param>
         /// <param name="env"></param>
         /// <returns></returns>
-        public Task Invoke(HttpContext context, IHostingEnvironment env)
+        public async Task Invoke(HttpContext context, IHostingEnvironment env)
         {
             GetDictionaryFromFiles(context, env).Wait();
             context.Items.Add(_options.CustomName, _dictionary);
-            return _next(context);
+            await _next(context);
         }
     }
     /// <summary>
