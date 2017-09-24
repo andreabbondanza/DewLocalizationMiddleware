@@ -169,7 +169,7 @@ public async Task<IActionResult> About()
 
 ## Differences between service and middleware
 
-The main difference is that in the middleware way the dictionary will be read automatically in a point of request pipeline, and you after this can use it just colling _HttpContext.GetDewLocalizationTranslator()_.
+The main difference is that in the middleware way the dictionary will be read automatically in a point of request pipeline, and you after this can use it just calling _HttpContext.GetDewLocalizationTranslator()_.
 
 In the service way, you just inject the object with its options to controller, but before you can use it, you need to read the dictionary by calling method _GetDictionaryFromFiles(HttpContext)_
 
