@@ -6,13 +6,8 @@ You can use the version 1.0 for .net core (asp net core 1.x) or the version 2.0 
 
 # How to install
 
-Simply go into NuGet package manager and search for DewLocalizationMiddleware or use:
 ```Console
-Install-Package DewLocalizationMiddleware -Version 1.0.0
-```
-or
-```Console
-Install-Package DewLocalizationMiddleware -Version 2.1.1
+Install-Package DewLocalizationMiddleware -Version 2.2.0
 ```
 from package manager console.
 
