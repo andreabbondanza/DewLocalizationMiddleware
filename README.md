@@ -97,6 +97,46 @@ Remember to add the:
 using DewCore.AspNetCore.Middlewares;
 ```
 to use the UseDewLocalizationMiddleware method
+## Use Translator like a service
+
+If you don't want use the localization middleware as middleware in the pipeline, you can use it like a service.
+This is how you can do it.
+
+```c#
+public void ConfigureServices(IServiceCollection services)
+{
+    //if you want use it with custom options
+    services.AddScoped<IDewTranslator, DewTranslatorService>((sp) =>
+    {
+        var service = sp.GetRequiredService<IHostingEnvironment>();
+        return new DewTranslatorService(new DewLocalizationMiddlewareOptions() { Language = "it-it" }, service);
+    });
+    //if you want use it with default options
+    //->services.AddScoped<IDewTranslator,DewTranslatorService>();
+
+
+    services.AddMvc();
+}
+```
+
+In this case, you should use the dependency injection to get the translator:
+```c#
+public class HomeController : Controller
+{
+    IDewTranslator _translator = null;
+    public HomeController(IDewTranslator translator)
+    {
+        _translator = translator;
+    }
+}
+```
+you can see in the next example how to work with it in both ways.
+
+
+__NOTE:__ if you set the translator as a service you cannot read the dictionary from HttpContext, and same is the inverse (if you use it like middleware it will not work with D-Injection)
+
+__NOTE:__ You can set both way (but why?)
+
 
 ## Work with Translator
 
@@ -112,18 +152,29 @@ After that, in the controller.
 
 ```c#
 //a method into a controller
-public IActionResult About()
+public async Task<IActionResult> About()
 {
     //if no item is setted with Default name or custom name, this method returns null
     var translator = HttpContext.GetDewLocalizationTranslator();
+    // if you use the DewTranslator as a Service you should do
+    await _translator.GetDictionaryFromFiles(HttpContext);
     ViewData["Message"] = translator.GetString("Your application description page."); //return the key as text if not found value
-    //or
+    //or _translator.GetString(...)_
     ViewData["Message"] = translator.GetString("Your application description page.", "Text not found!"); //return the second argument if key value not found
     //or
     ViewData["Message"] = translator["Your application description page."]; //however square notation throw an exception if key not exists
     return View();
 }
 ```
+
+## Differences between service and middleware
+
+The main difference is that in the middleware way the dictionary will be read automatically in a point of request pipeline, and you after this can use it just colling _HttpContext.GetDewLocalizationTranslator()_.
+
+In the service way, you just inject the object with its options to controller, but before you can use it, you need to read the dictionary by calling method _GetDictionaryFromFiles(HttpContext)_
+
+After that, the use is the same.
+
 ## Note 
 ## NuGet
 You can find it on nuget with the name [DewLocalizationMiddleware](https://www.nuget.org/packages/DewLocalizationMiddleware/)

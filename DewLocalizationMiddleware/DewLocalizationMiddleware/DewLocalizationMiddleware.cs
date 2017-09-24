@@ -10,9 +10,141 @@ using System.Threading.Tasks;
 namespace DewCore.AspNetCore.Middlewares
 {
     /// <summary>
+    /// Service interface
+    /// </summary>
+    public interface IDewTranslator
+    {
+        /// <summary>
+        /// Return the key if string is not present
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        string GetString(string key);
+        /// <summary>
+        /// return def if string is not present
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="def"></param>
+        /// <returns></returns>
+        string GetString(string key, string def);
+        /// <summary>
+        /// return the raw dictionary
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> GetInternalDictionary();
+        /// <summary>
+        /// read dictionary
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task GetDictionaryFromFiles(HttpContext context);
+    }
+    /// <summary>
     /// Translator helper for middleware
     /// </summary>
-    public class DewTranslator
+    public class DewTranslatorService : IDewTranslator
+    {
+        private Dictionary<string, string> _dictionary;
+        private DewLocalizationMiddlewareOptions _options = null;
+        private IHostingEnvironment _env = null;
+        /// <summary>
+        /// Search a string into dictionary, if not found return the key (useful if you use the value as key in your default language)
+        /// </summary>
+        /// <param name="key">Key value</param>
+        /// <returns></returns>
+        public string GetString(string key)
+        {
+            var s = _dictionary.FirstOrDefault(x => x.Key == key);
+            if (s.Equals(default(KeyValuePair<string, string>)))
+            {
+                return key;
+            }
+            return s.Value;
+        }
+        /// <summary>
+        /// Search a string into dictionary, if not found return the default
+        /// </summary>
+        /// <param name="key">Key value</param>
+        /// <param name="def">Default value</param>
+        /// <returns></returns>
+        public string GetString(string key, string def)
+        {
+            var s = _dictionary.FirstOrDefault(x => x.Key == key);
+            if (s.Equals(default(KeyValuePair<string, string>)))
+            {
+                return def;
+            }
+            return s.Value;
+        }
+        /// <summary>
+        /// Return the key value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        public string this[string key]
+        {
+            get { return _dictionary.First(x => x.Key == key).Value; }
+        }
+        /// <summary>
+        /// Return the internal string dictionary
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetInternalDictionary()
+        {
+            return _dictionary;
+        }
+        /// <summary>
+        /// Read the dictionary from the file
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public async Task GetDictionaryFromFiles(HttpContext context)
+        {
+            var language = context.Request.Cookies.FirstOrDefault(x => x.Key == _options.Cookie);
+            string currLanguage = _options.Language;
+            if (!language.Equals(default(KeyValuePair<string, string>)))
+                currLanguage = language.Value;
+            string localizationJson = null;
+            try
+            {
+                using (Stream file = _env.ContentRootFileProvider.GetFileInfo(_options.Path + "/" + currLanguage + ".json").CreateReadStream())
+                {
+                    using (StreamReader streamReader = new StreamReader(file))
+                    {
+                        localizationJson = await streamReader.ReadToEndAsync();
+                    }
+                }
+            }
+            catch
+            {//if something goes wrong with the file we load the default
+                using (Stream file = _env.ContentRootFileProvider.GetFileInfo(_options.Path + "/" + _options.Language + ".json").CreateReadStream())
+                {
+                    using (StreamReader streamReader = new StreamReader(file))
+                    {
+                        localizationJson = await streamReader.ReadToEndAsync();
+                    }
+                }
+            }
+            _dictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(localizationJson);
+        }
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="env"></param>
+        public DewTranslatorService(DewLocalizationMiddlewareOptions options = null, IHostingEnvironment env = null)
+        {
+            _options = options;
+            _env = env;
+        }
+    }
+    /// <summary>
+    /// Translator helper for middleware
+    /// </summary>
+    public class DewTranslator : IDewTranslator
     {
         private Dictionary<string, string> _dictionary;
         /// <summary>
@@ -65,10 +197,20 @@ namespace DewCore.AspNetCore.Middlewares
             return _dictionary;
         }
         /// <summary>
+        /// Read dictionary again (disabled on DewTranslator
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public Task GetDictionaryFromFiles(HttpContext context)
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dictionary"></param>
-        public DewTranslator(Dictionary<string, string> dictionary)
+        public DewTranslator(Dictionary<string, string> dictionary = null)
         {
             _dictionary = dictionary;
         }
