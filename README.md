@@ -86,7 +86,8 @@ app.UseDewLocalizationMiddleware(new DewLocalizationMiddlewareOptions()
     Path = "MyNewLocalizationPath"
 });
 ```
-__NOTE :__ If no file present, ever the default file, the middleware throw an exception
+__NOTE :__ If no file present, ever the default file, the middleware throw an exception.
+
 Remember to add the:
 ```c#
 using DewCore.AspNetCore.Middlewares;
