@@ -12,10 +12,10 @@
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>Localization, Dew, Aspnetcore, dotnetcore</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageReleaseNotes>Add localization as service</PackageReleaseNotes>
-    <Version>2.2.0</Version>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
+    <PackageReleaseNotes>Removed not found exception to square notation</PackageReleaseNotes>
+    <Version>2.3.0</Version>
+    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <FileVersion>2.3.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

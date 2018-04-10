@@ -186,7 +186,7 @@ namespace DewCore.AspNetCore.Middlewares
         /// <exception cref="NullReferenceException"></exception>
         public string this[string key]
         {
-            get { return _dictionary.First(x => x.Key == key).Value; }
+            get => _dictionary.ContainsKey(key) ? _dictionary[key] : key;
         }
         /// <summary>
         /// Return the internal string dictionary
@@ -310,7 +310,7 @@ namespace DewCore.AspNetCore.Middlewares
         /// <returns></returns>
         public static DewTranslator GetDewLocalizationTranslator(this HttpContext context, string customName = null)
         {
-            var name = customName != null ? customName : "DewLocalization";
+            var name = customName ?? "DewLocalization";
             var data = context.Items.FirstOrDefault(x => x.Key as string == name);
             return data.Equals(default(KeyValuePair<object, object>)) ? null : new DewTranslator(data.Value as Dictionary<string, string>);
         }
